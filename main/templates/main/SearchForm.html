@@ -1,0 +1,179 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  
+  <!-- Bootstrap4 start-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- Bootstrap4 end-->
+
+  <!-- Bootstrap4 반응형 제거 start-->
+  <style> 
+  .container {
+  width: 1120px;
+  max-width: none !important;
+  }
+  </style>
+  <!-- Bootstrap4 반응형 제거 end-->
+  
+  <!-- jqGrid start -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/css/ui.jqgrid.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.5/jquery.jqgrid.min.js"></script>
+  <!-- jqGrid end -->
+  
+  
+  <!-- jQuery UI for Datepicker start-->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+   <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/datepicker-ko.js"></script>
+  <!-- jQuery UI for Datepicker End-->
+
+  
+  <title>피노 인사시스템</title>
+</head>
+<body>
+	 {% block header%}
+        {% include "./header.html"%}
+    {% endblock %}
+	<div style="padding:10 150 150 150px;" id="app">
+ 		<form action="/index/SearchFormAjax" method="post" id="registerForm">{% csrf_token %}
+ 			<h1 style="margin-top:50px; margin-bottom:50px;">Employee List</h1>
+ 			<div class="row">
+ 				<div class="col-xs-3" style="padding:0px">
+      				<div class="short-div"><label for="sabun"><font color="red">*</font>사번 </label><input style="margin-left:31px;" type="text" id="sabun" name="sabun"></div>
+      				<div class="short-div"><label for="pos_gbn_code"><font color="red">*</font>직위 </label>
+        				
+   							<select name="pos_gbn_code" id="pos_gbn_code" style="margin-left:26px; width:178px; height:32px;" class="select_02">
+      							 {% for document in documents %}
+                    {% if document.gubun == '직위' %}
+                    <option value="{{document.name}}">{{document.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+      				</div>
+    			</div>
+				<div class="col-xs-3" style="padding-left:60px">
+      				<div class="short-div"><label for="name">성명 </label><input style="margin-left:45px; ime-mode:active;" type="text" id="name" name="name"></div>
+      				<div class="short-div"><label for="join_day">입사일자 </label><input autocomplete="off" data-date-format="mm/dd/yyyy" style="margin-left:14px;" type="text" id="join_day" name="join_day" value=""></div>
+      			</div>
+      			<div class="col-xs-3" style="padding-left:60px">
+      				<div class="short-div"><label for="JOIN_GBN_CODE_name">입사구분 </label>
+   							<select name="JOIN_GBN_CODE_name" id="JOIN_GBN_CODE_name" style="margin-left:15px; width:178px; height:32px;" class="select_02">
+      							 {% for document in documents %}
+                    {% if document.gubun == '입사구분' %}
+                    <option value="{{document.name}}">{{document.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+      				</div>
+      				<div class="short-div"><label for="retire_day">퇴사일자 </label><input autocomplete="off" style="margin-left:20px;" type="text" id="retire_day" name="retire_day" value=""></div>
+      			</div>
+         		<div class="col-xs-3" style="padding-left:60px">
+      				<div class="short-div"><label for="put_yn">투입여부 </label>	
+   							<select name="put_yn" id="put_yn" style="margin-left:15px; width:178px; height:32px;" class="select_02">
+      							 {% for document in documents %}
+                    {% if document.gubun == '투입여부' %}
+                    <option value="{{document.name}}">{{document.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+      				</div>
+      				<div class="short-div"><label for="JOB_TYPE">직종분류 </label>
+   							<select name="JOB_TYPE" id="JOB_TYPE" style="margin-left:15px; width:178px; height:32px;" class="select_02">
+      							  {% for document in documents %}
+                    {% if document.gubun == '직종체크' %}
+                    <option value="{{document.name}}">{{document.name}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+      				</div>
+      			</div>
+      		</div>
+  			<div class="row" style="margin-left:1000px; margin-top:20px; margin-bottom:20px;">
+        		<button type="button" onClick="searchSubmit()" class="btn btn-info">Search</button> &nbsp;&nbsp;<button type="button" onClick="resetButton()" class="btn btn-secondary">Reset</button> &nbsp;&nbsp;<button type="button" class="btn btn-danger" onClick="history.back();">Back</button>
+        	</div>
+    		<div class="row" style="text-align:center" id="resultData">
+   					<table id="photos" class="display">	
+					</table>
+				<div id="pager2"></div>
+  			</div>
+  		</form>
+	</div>
+	<script>
+      $(document).ready(function(){
+    	$("#join_day").datepicker({ dateFormat: 'yymmdd' }); 
+  	    $("#retire_day").datepicker({ dateFormat: 'yymmdd' }); 
+    		    
+    		
+    	  $("#photos").jqGrid('navGrid','#pager2',{edit:false,add:false,del:false});
+    		$("#photos").jqGrid({
+    			url:'/index/SearchFormAjax',
+    			datatype: "json",
+    			colNames:['사번', '성명','주민번호', '핸드폰번호', '직위','입사일자','퇴사일자','투입여부','연봉'],
+          colModel:[
+            {name:'sabun',index:'sabun', jsonmap:'sabun', width:110, align: 'center'},
+            {name:'name',index:'name', jsonmap:'name', width:110, align: 'center'},
+            {name:'reg_no',index:'reg_no', width:200, align: 'center'},
+            {name:'hp',index:'hp', width:200, align: 'center'},
+            {name:'pos_gbn_code',index:'pos_gbn_code', width:100, align: 'center'},
+            {name:'join_day',index:'join_day', align: 'center', width:150, formatter: 'date', 
+                formatoptions: { srcformat: 'Y/m/d', newformat: 'Y/m/d'}},
+            {name:'retire_day',index:'retire_day', width:150, align: 'center', formatter: 'date', 
+                    formatoptions: { srcformat: 'Y/m/d', newformat: 'Y/m/d'}},
+            {name:'put_yn',index:'put_yn', width:80, align: 'center'},
+            {name:'salary',index:'salary', width:110, align: 'center', formatter:'integer'} 
+          ],
+          formatter:{
+                    integer:{thousandsSeparator:",",defaultValue:'0'}
+              },
+              
+          rowNum:10,
+          loadonce: true,
+          rowList:[10,20,30],
+          pager: '#pager2',
+          sortname: 'GUBUN',
+          loadComplete: function (data) {
+                  if ($(this).getGridParam("records")==0) {
+                 alert('데이터 없음');
+                  }
+                 
+          },
+           onSelectRow: function(ids) { 
+             var gridRow = $(this).getRowData(ids);
+             var sabun = gridRow["sabun"];
+             location.href= "/index/UpdateForm?sabun="+sabun;
+                }
+          });
+          });
+	function resetButton(){
+		document.getElementById("registerForm").reset();
+		jQuery("#photos").jqGrid('setGridParam',{datatype:'json', postData: {name:'', sabun:'', pos_gbn_code:'', join_day: '', retire_day: '', JOIN_GBN_CODE_name:'',put_yn:'', JOB_TYPE:''}}).trigger('reloadGrid');
+		};
+	
+	function searchSubmit(){
+    
+    
+		var name = $("#name").val();
+		var sabun = $("#sabun").val();
+		var pos_gbn = $("#pos_gbn_code").val();
+		var join_day = $("#join_day").val();
+		var retire_day = $("#retire_day").val();
+		var join_gbn = $("#JOIN_GBN_CODE_name").val();
+		var put_yn = $("#put_yn").val();
+		var job_type = $("#JOB_TYPE").val();
+		jQuery("#photos").jqGrid('setGridParam',{datatype:'json', postData: {name:name, sabun:sabun, pos_gbn_code:pos_gbn, join_day: join_day, retire_day: retire_day, join_gbn_code:join_gbn,put_yn:put_yn, job_type:job_type}}).trigger('reloadGrid');
+	}
+
+  $("searchForm").submit();
+
+
+	</script>
+</body>
+</html>
